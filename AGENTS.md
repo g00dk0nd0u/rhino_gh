@@ -39,6 +39,11 @@ result, log_text
 
 - Do not edit binary Grasshopper files unless specifically requested.
 - The canonical Grasshopper runner file is `grasshopper/rhino_gh_runner.gh`.
+- The canonical Grasshopper Python Script code is stored in `docs/grasshopper_runner.md`.
+- Keep `gh_loader.py` compatible with that script.
+- Do not change the input/output contract without explicit approval.
+- Do not add hard-coded local paths to the Grasshopper runner.
+- The Grasshopper file should remain a thin runner only.
 
 ## Repository hygiene
 
