@@ -5,6 +5,10 @@ This repository targets Rhino 8 / Grasshopper Python 3.9.
 ## Architecture
 
 - Grasshopper files are runners only; avoid putting business logic inside `.gh` files.
+- Keep the Grasshopper runner minimal.
+- The current Grasshopper workflow uses a single command input and one run toggle.
+- Do not introduce tool selection unless explicitly requested.
+- Tool discovery and dropdown selection are out of scope for now.
 - Implement tools under `tools/*.py`.
 - Each tool module must expose:
 
@@ -37,6 +41,8 @@ result, log_text
 
 ## Grasshopper files
 
+- Grasshopper contract: `x` = command text / user input, `y` = run toggle, `a` = result/geometry, `out` = printed log.
+- Do not add input `z`, output `b`, Value Lists, dropdowns, or other tool selection mechanisms unless explicitly requested.
 - Do not edit binary Grasshopper files unless specifically requested.
 - The canonical Grasshopper runner file is `grasshopper/rhino_gh_runner.gh`.
 - The canonical Grasshopper Python Script code is stored in `docs/grasshopper_runner.md`.
