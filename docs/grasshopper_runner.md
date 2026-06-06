@@ -58,10 +58,18 @@ print(log)
 
 ## Example optional input
 
-Input `x` can be empty to run the active tool with its defaults. For `test_line`, these examples are also supported:
+Input `x` can be empty to run the active `twist_tower` tool with its defaults. The default input creates a 1000-unit wide, 5000-unit tall tower with 20 square levels and a 90-degree total twist.
+
+Example `x` values:
+
+- Empty input
 
 ```text
-length=500 count=4
+twist_degrees=120
 ```
 
-or a numeric input such as `500` to set the line length while keeping the default count.
+```text
+width=1500 height=8000 levels=30 twist_degrees=180
+```
+
+A numeric input such as `120` sets `twist_degrees` while keeping the other default values.
