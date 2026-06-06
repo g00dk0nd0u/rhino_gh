@@ -13,7 +13,7 @@ import traceback
 from typing import Any, Dict, List, Tuple
 
 
-ACTIVE_TOOL = "test_line"
+ACTIVE_TOOL = "twist_tower"
 
 
 class Logger:
@@ -61,7 +61,7 @@ def _coerce_value(value: str) -> Any:
 def _parse_command(command: str) -> Tuple[str, Dict[str, Any]]:
     parts = shlex.split(command or "")
     if not parts:
-        raise ValueError("Command is empty. Example: test_line length=1000 count=5")
+        raise ValueError("Command is empty. Example: twist_tower width=1500 levels=30 twist_degrees=120")
 
     tool_name = parts[0]
     inputs: Dict[str, Any] = {}
