@@ -1,6 +1,6 @@
 # Grasshopper Python Script runner
 
-Use the Grasshopper Python Script node only as a thin runner. Keep all actual tool logic in Python modules under `tools/*.py`. Keep the runner minimal for the current single active tool workflow.
+Use the Grasshopper Python Script node only as a thin runner. Keep all actual tool logic in Python modules under `tools/*.py`. The current workflow uses one active tool configured in `gh_loader.py`, so users do not need to type the tool name in Grasshopper.
 
 The canonical Grasshopper runner file is assumed to be saved at:
 
@@ -10,7 +10,7 @@ grasshopper/rhino_gh_runner.gh
 
 The Python Script node must use this input/output contract:
 
-- Input `x`: command text from a Panel or other Grasshopper input.
+- Input `x`: optional user input from a Panel or other Grasshopper input. It may be empty.
 - Input `y`: run toggle.
 - Output `a`: geometry/result returned by the active tool workflow.
 - Default output `out`: printed execution log.
@@ -26,7 +26,7 @@ import sys
 import os
 import importlib
 
-command = str(x).strip() if x else ""
+user_input = x
 run_flag = bool(y)
 
 gh_doc = ghenv.Component.OnPingDocument()
@@ -47,21 +47,21 @@ else:
         a = None
         log = "Waiting. Set run=True."
 
-    elif not command:
-        a = None
-        log = "command is empty."
-
     else:
         import gh_loader
         importlib.reload(gh_loader)
 
-        a, log = gh_loader.run_command(command)
+        a, log = gh_loader.run_active_tool(user_input)
 
 print(log)
 ```
 
-## Example command input
+## Example optional input
+
+Input `x` can be empty to run the active tool with its defaults. For `test_line`, these examples are also supported:
 
 ```text
-test_line length=1000 count=5
+length=500 count=4
 ```
+
+or a numeric input such as `500` to set the line length while keeping the default count.
