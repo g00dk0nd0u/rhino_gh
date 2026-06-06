@@ -1,6 +1,6 @@
 # Grasshopper Python Script runner
 
-Use the Grasshopper Python Script node only as a thin runner. Keep all actual tool logic in Python modules under `tools/*.py`.
+Use the Grasshopper Python Script node only as a thin runner. Keep all actual tool logic in Python modules under `tools/*.py`. Keep the runner minimal for the current single active tool workflow.
 
 The canonical Grasshopper runner file is assumed to be saved at:
 
@@ -12,10 +12,10 @@ The Python Script node must use this input/output contract:
 
 - Input `x`: command text from a Panel or other Grasshopper input.
 - Input `y`: run toggle.
-- Output `a`: geometry/result returned by the selected tool.
+- Output `a`: geometry/result returned by the active tool workflow.
 - Default output `out`: printed execution log.
 
-Do not use a hard-coded local repository path. Do not require a `repo_path` Panel. The script below automatically detects the repository root from the saved `.gh` file location.
+Do not use a hard-coded local repository path. Do not require a `repo_path` Panel. Do not add input `z`, output `b`, Value Lists, dropdowns, tool discovery, or tool selection mechanisms. The script below automatically detects the repository root from the saved `.gh` file location.
 
 ## Canonical runner code
 
