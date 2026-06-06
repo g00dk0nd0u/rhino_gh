@@ -89,6 +89,7 @@ def run_command(command: str):
         logger.info("Inputs: {}".format(inputs))
 
         module = importlib.import_module("tools.{}".format(tool_name))
+        module = importlib.reload(module)
         run_func = getattr(module, "run", None)
         if run_func is None or not callable(run_func):
             raise AttributeError("tools.{} must define run(inputs, logger)".format(tool_name))

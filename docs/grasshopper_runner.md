@@ -1,26 +1,30 @@
 # Grasshopper Python Script runner
 
-Rhino 8 / Grasshopper の Python Script ノードには、実処理を書かずに以下のような最小コードだけを貼ります。
+Use the Grasshopper Python Script node only as a thin runner. Keep all actual tool logic in Python modules under `tools/*.py`.
+
+Paste a minimal runner like this into the Grasshopper Python Script node:
 
 ```python
 import sys
+import importlib
 
 repo_path = r"C:\path\to\rhino_gh"
 if repo_path not in sys.path:
     sys.path.insert(0, repo_path)
 
 import gh_loader
+importlib.reload(gh_loader)
 
 result, log = gh_loader.run_command(command)
 ```
 
-## ノード入出力
+## Node inputs and outputs
 
-- 入力 `command`: Panel などから渡すコマンド文字列
-- 出力 `result`: tool が返す Rhino / Grasshopper 用データ
-- 出力 `log`: 実行ログ。成功時も失敗時も返ります。
+- Input `command`: command text from a Panel or other Grasshopper input.
+- Output `result`: Rhino / Grasshopper data returned by the selected tool.
+- Output `log`: execution log returned on both success and failure.
 
-入力例:
+Example input:
 
 ```text
 test_line length=1000 count=5

@@ -1,34 +1,52 @@
 # rhino_gh
 
-Rhino 8 / Grasshopper Python 3.9 用の Python ツール群です。
+Python tools for Rhino 8 / Grasshopper Python 3.9.
 
-## 目的
+## Purpose
 
-Grasshopper 側の Python Script ノードには runner としての薄い呼び出しコードだけを書き、実処理はこのリポジトリ内の Python モジュールから呼び出します。
+Grasshopper Python Script nodes should contain only thin runner code. All substantial processing should live in Python modules in this repository so the logic can be edited, reviewed, tested, and versioned outside binary Grasshopper files.
 
-## 使い方
+## Usage
 
-Grasshopper 側は runner として使い、`gh_loader.run_command(command)` を呼び出します。最小コード例は [`docs/grasshopper_runner.md`](docs/grasshopper_runner.md) を参照してください。
+Use the Grasshopper file at `grasshopper/rhino_gh_runner.gh` as the runner, or paste the minimal runner snippet from [`docs/grasshopper_runner.md`](docs/grasshopper_runner.md) into a Python Script node.
 
-## ツール追加の運用
+The runner calls:
 
-新しい処理は `tools/*.py` に追加します。各 tool は必ず次の関数を持ちます。
+```python
+result, log = gh_loader.run_command(command)
+```
+
+`gh_loader.run_command(command)` always returns `result, log_text`.
+
+## Adding tools
+
+Add new tools under `tools/*.py`. Each tool module must expose:
 
 ```python
 def run(inputs, logger):
     ...
 ```
 
-`logger` に書いた内容は Grasshopper の `log` として返ります。外部 pip ライブラリは使わず、Rhino 8 / Grasshopper Python 3.9 の標準環境で動く実装にします。
+Write meaningful log messages with `logger.info()` and `logger.error()`. The collected log text is returned to Grasshopper as the `log` output.
 
-## command Panel 入力例
+Avoid external pip packages unless they are explicitly approved. Prefer `Rhino.Geometry` and built-in Python modules so tools run in the standard Rhino 8 / Grasshopper Python 3.9 environment.
+
+## Command syntax
+
+Commands use a simple format:
+
+```text
+tool_name key=value key=value
+```
+
+Example:
 
 ```text
 test_line length=1000 count=5
 ```
 
-先頭語 `test_line` が `tools/test_line.py` に対応し、後続の `key=value` が `inputs` として渡されます。
+The first token, `test_line`, maps to `tools/test_line.py`. Remaining `key=value` tokens are parsed into the `inputs` dictionary passed to the tool.
 
-## 更新運用
+## Updating code
 
-このリポジトリを更新したら `git pull` し、Grasshopper で Python Script ノードを再実行します。
+After updating this repository with `git pull` or local edits, rerun the Grasshopper Python Script node. The runner reloads `gh_loader`, and `gh_loader` reloads the selected tool module before running it.
