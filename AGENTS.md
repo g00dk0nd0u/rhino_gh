@@ -6,7 +6,7 @@ This repository targets Rhino 8 / Grasshopper Python 3.9.
 
 - Grasshopper files are runners only; avoid putting business logic inside `.gh` files.
 - Keep the Grasshopper runner minimal.
-- The current Grasshopper workflow uses a single command input and one run toggle.
+- The current Grasshopper workflow is a single active tool with optional user input and one run toggle.
 - Do not introduce tool selection unless explicitly requested.
 - Tool discovery and dropdown selection are out of scope for now.
 - Implement tools under `tools/*.py`.
@@ -24,13 +24,18 @@ def run(inputs, logger):
 
 ## Runner contract
 
-- Keep command syntax simple:
+- `gh_loader.ACTIVE_TOOL` identifies the single active Grasshopper tool.
+- `gh_loader.run_active_tool(user_input=None)` is the canonical runner entry point for Grasshopper.
+- Input `x` is optional user input for the active tool, not a tool name.
+- If `x` is empty, the active tool should run with default values.
+- Tools should provide `DEFAULT_INPUTS` where possible so empty `x` has useful behavior.
+- Keep backward-compatible command syntax simple when using `run_command(command)` directly:
 
 ```text
 tool_name key=value key=value
 ```
 
-- `gh_loader.run_command(command)` must always return:
+- `gh_loader.run_active_tool(user_input=None)` and `gh_loader.run_command(command)` must always return:
 
 ```python
 result, log_text
@@ -41,7 +46,7 @@ result, log_text
 
 ## Grasshopper files
 
-- Grasshopper contract: `x` = command text / user input, `y` = run toggle, `a` = result/geometry, `out` = printed log.
+- Grasshopper contract: `x` = optional user input, `y` = run toggle, `a` = result/geometry, `out` = printed log.
 - Do not add input `z`, output `b`, Value Lists, dropdowns, or other tool selection mechanisms unless explicitly requested.
 - Do not edit binary Grasshopper files unless specifically requested.
 - The canonical Grasshopper runner file is `grasshopper/rhino_gh_runner.gh`.

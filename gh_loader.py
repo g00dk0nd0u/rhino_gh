@@ -1,7 +1,8 @@
 """Grasshopper runner loader for Rhino 8 Python 3.9.
 
-Grasshopper Python Script nodes should call :func:`run_command` and keep all
-substantial tool logic in modules under ``tools/``.
+Grasshopper Python Script nodes should call :func:`run_active_tool` for the
+current single active tool workflow. :func:`run_command` remains available for
+older runner scripts and command-panel workflows.
 """
 
 from __future__ import annotations
@@ -10,6 +11,9 @@ import importlib
 import shlex
 import traceback
 from typing import Any, Dict, List, Tuple
+
+
+ACTIVE_TOOL = "test_line"
 
 
 class Logger:
@@ -72,6 +76,65 @@ def _parse_command(command: str) -> Tuple[str, Dict[str, Any]]:
     return tool_name, inputs
 
 
+def _normalize_user_input(user_input: Any) -> Dict[str, Any]:
+    if user_input is None:
+        return {}
+    if isinstance(user_input, str) and not user_input.strip():
+        return {}
+    if isinstance(user_input, dict):
+        return user_input
+    if isinstance(user_input, (int, float, bool, str)):
+        return {"value": user_input}
+    if isinstance(user_input, (list, tuple)):
+        return {"items": list(user_input)}
+    return {"value": user_input}
+
+
+def _load_tool(tool_name: str):
+    module = importlib.import_module("tools.{}".format(tool_name))
+    module = importlib.reload(module)
+    run_func = getattr(module, "run", None)
+    if run_func is None or not callable(run_func):
+        raise AttributeError("tools.{} must define run(inputs, logger)".format(tool_name))
+    return module, run_func
+
+
+def _merge_default_inputs(module: Any, inputs: Dict[str, Any]) -> Dict[str, Any]:
+    default_inputs = getattr(module, "DEFAULT_INPUTS", None)
+    if not default_inputs:
+        return dict(inputs)
+
+    merged = dict(default_inputs)
+    merged.update(inputs)
+    return merged
+
+
+def run_active_tool(user_input=None):
+    """Run the configured active tool and return ``(result, log_text)``.
+
+    ``user_input`` is optional Grasshopper input from ``x``. Empty input runs
+    the active tool with its ``DEFAULT_INPUTS`` when provided by the tool.
+    """
+    logger = Logger()
+    result = None
+
+    try:
+        logger.info("Active tool: {}".format(ACTIVE_TOOL))
+        module, run_func = _load_tool(ACTIVE_TOOL)
+        inputs = _normalize_user_input(user_input)
+        inputs = _merge_default_inputs(module, inputs)
+        logger.info("Inputs: {}".format(inputs))
+
+        result = run_func(inputs, logger)
+        logger.info("Status: success")
+    except Exception:
+        logger.error("Status: error")
+        logger.error(traceback.format_exc())
+
+    log_text = logger.text()
+    return result, log_text
+
+
 def run_command(command: str):
     """Run a tool command and return ``(result, log_text)``.
 
@@ -86,13 +149,10 @@ def run_command(command: str):
         logger.info("Command: {}".format(command))
         tool_name, inputs = _parse_command(command)
         logger.info("Tool: {}".format(tool_name))
-        logger.info("Inputs: {}".format(inputs))
 
-        module = importlib.import_module("tools.{}".format(tool_name))
-        module = importlib.reload(module)
-        run_func = getattr(module, "run", None)
-        if run_func is None or not callable(run_func):
-            raise AttributeError("tools.{} must define run(inputs, logger)".format(tool_name))
+        module, run_func = _load_tool(tool_name)
+        inputs = _merge_default_inputs(module, inputs)
+        logger.info("Inputs: {}".format(inputs))
 
         result = run_func(inputs, logger)
         logger.info("Status: success")
