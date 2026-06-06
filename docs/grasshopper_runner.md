@@ -2,29 +2,65 @@
 
 Use the Grasshopper Python Script node only as a thin runner. Keep all actual tool logic in Python modules under `tools/*.py`.
 
-Paste a minimal runner like this into the Grasshopper Python Script node:
+The canonical Grasshopper runner file is assumed to be saved at:
+
+```text
+grasshopper/rhino_gh_runner.gh
+```
+
+The Python Script node must use this input/output contract:
+
+- Input `x`: command text from a Panel or other Grasshopper input.
+- Input `y`: run toggle.
+- Output `a`: geometry/result returned by the selected tool.
+- Default output `out`: printed execution log.
+
+Do not use a hard-coded local repository path. Do not require a `repo_path` Panel. The script below automatically detects the repository root from the saved `.gh` file location.
+
+## Canonical runner code
+
+Paste this exact code into the Grasshopper Python Script node:
 
 ```python
 import sys
+import os
 import importlib
 
-repo_path = r"C:\path\to\rhino_gh"
-if repo_path not in sys.path:
-    sys.path.insert(0, repo_path)
+command = str(x).strip() if x else ""
+run_flag = bool(y)
 
-import gh_loader
-importlib.reload(gh_loader)
+gh_doc = ghenv.Component.OnPingDocument()
+gh_file = gh_doc.FilePath
 
-result, log = gh_loader.run_command(command)
+if not gh_file:
+    a = None
+    log = "Grasshopper file is not saved. Save rhino_gh_runner.gh first."
+
+else:
+    grasshopper_dir = os.path.dirname(gh_file)
+    repo_path = os.path.dirname(grasshopper_dir)
+
+    if repo_path not in sys.path:
+        sys.path.insert(0, repo_path)
+
+    if not run_flag:
+        a = None
+        log = "Waiting. Set run=True."
+
+    elif not command:
+        a = None
+        log = "command is empty."
+
+    else:
+        import gh_loader
+        importlib.reload(gh_loader)
+
+        a, log = gh_loader.run_command(command)
+
+print(log)
 ```
 
-## Node inputs and outputs
-
-- Input `command`: command text from a Panel or other Grasshopper input.
-- Output `result`: Rhino / Grasshopper data returned by the selected tool.
-- Output `log`: execution log returned on both success and failure.
-
-Example input:
+## Example command input
 
 ```text
 test_line length=1000 count=5
