@@ -1,12 +1,22 @@
 # rhino_gh
 
-Python tools for Rhino 8 / Grasshopper Python 3.9.
+Python tools for Rhino 8, moving from a Grasshopper runner prototype toward an agent-driven Rhino sandbox and future Rhino plugin workflow.
 
 ## Purpose
 
-Grasshopper Python Script nodes should contain only thin runner code. All substantial processing should live in Python modules in this repository so the logic can be edited, reviewed, tested, and versioned outside binary Grasshopper files.
+This repository started with a Grasshopper Python Script runner prototype. The target direction is now an Agent-driven Rhino Sandbox Preview platform: Codex modifies Python tool code, runs it in a safe preview runtime, inspects logs and artifacts, and iterates before a human approves any import into the active Rhino model.
 
-## Usage
+All substantial processing should live in Python modules in this repository so the logic can be edited, reviewed, tested, and versioned outside binary UI files.
+
+## Current status
+
+The current active sample tool is `twist_tower`. It creates a closed mesh tower from square horizontal floor sections that rotate gradually as they rise. By default, it also returns the section curves.
+
+Grasshopper files are retained as prototype and reference assets only. They are not the final UI or agent runtime.
+
+Future work will add `sandbox_runner/` for non-destructive preview runs and `plugin/` for the final Rhino UI with an explicit Import or Commit step.
+
+## Prototype Grasshopper usage
 
 Use the Grasshopper file at `grasshopper/rhino_gh_runner.gh` as the runner, or paste the minimal runner snippet from [`docs/grasshopper_runner.md`](docs/grasshopper_runner.md) into a Python Script node.
 
@@ -18,9 +28,7 @@ result, log = gh_loader.run_active_tool(user_input)
 
 `gh_loader.run_active_tool(user_input)` always returns `result, log_text`. Input `x` is optional user input for the active tool. Leave `x` empty to run the active tool with its defaults.
 
-## Active tool: twisted tower
-
-The current active tool is `twist_tower`. It creates a closed mesh tower from square horizontal floor sections that rotate gradually as they rise. By default, it also returns the section curves.
+## Active tool: twist_tower
 
 Example `x` values:
 
