@@ -23,6 +23,12 @@ from plugin import rhino_preview_session as preview
 preview.run_preview("width=1500 height=8000 levels=30 twist_degrees=180")
 ```
 
+To zoom the active Rhino view to the temporary preview:
+
+```python
+preview.zoom_to_preview()
+```
+
 To clear the temporary viewport preview:
 
 ```python
@@ -35,8 +41,9 @@ To commit the current preview into the actual Rhino model:
 preview.commit_preview()
 ```
 
-`run_preview()` is non-destructive. It draws temporary geometry through the
-viewport conduit and does not call `sc.doc.Objects.Add...`.
+`run_preview()` is non-destructive. It draws temporary viewport geometry
+through the conduit and does not call `sc.doc.Objects.Add...`. The preview is
+not part of the Rhino document until it is committed.
 
 `commit_preview()` is the explicit destructive/import action. It is the only
 function in this prototype that adds approved preview geometry to the active

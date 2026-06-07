@@ -84,6 +84,50 @@ def _as_geometry_list(result):
     return [result]
 
 
+def _prepare_preview_geometry(geometry):
+    import Rhino.Geometry as rg
+
+    prepared = []
+    for obj in geometry:
+        if isinstance(obj, rg.Mesh):
+            obj.Normals.ComputeNormals()
+            obj.FaceNormals.ComputeFaceNormals()
+            unify_normals = getattr(obj, "UnifyNormals", None)
+            if callable(unify_normals):
+                unify_normals()
+            obj.Compact()
+        prepared.append(obj)
+    return prepared
+
+
+def _object_bounding_box(obj):
+    get_bounding_box = getattr(obj, "GetBoundingBox", None)
+    if not callable(get_bounding_box):
+        return None
+
+    try:
+        bbox = get_bounding_box(True)
+    except TypeError:
+        bbox = get_bounding_box()
+
+    if bbox and getattr(bbox, "IsValid", False):
+        return bbox
+    return None
+
+
+def _combined_bounding_box(geometry):
+    bbox = None
+    for obj in geometry:
+        object_bbox = _object_bounding_box(obj)
+        if object_bbox is None:
+            continue
+        if bbox is None:
+            bbox = object_bbox
+        else:
+            bbox.Union(object_bbox)
+    return bbox
+
+
 def _create_preview_conduit(geometry):
     import Rhino.Display as rd
     import Rhino.Geometry as rg
@@ -93,12 +137,18 @@ def _create_preview_conduit(geometry):
         def __init__(self, preview_geometry):
             rd.DisplayConduit.__init__(self)
             self._geometry = list(preview_geometry)
-            self._mesh_color = Color.FromArgb(90, 74, 144, 226)
-            self._wire_color = Color.FromArgb(220, 32, 96, 150)
-            self._curve_color = Color.FromArgb(240, 230, 126, 34)
+            self._bbox = _combined_bounding_box(self._geometry)
+            self._mesh_color = Color.FromArgb(74, 144, 226)
+            self._wire_color = Color.FromArgb(20, 72, 110)
+            self._curve_color = Color.FromArgb(230, 126, 34)
             self._material = rd.DisplayMaterial(self._mesh_color)
 
-        def DrawForeground(self, event_args):
+        def CalculateBoundingBox(self, event_args):
+            bbox = self._bbox
+            if bbox:
+                event_args.IncludeBoundingBox(bbox)
+
+        def PostDrawObjects(self, event_args):
             display = event_args.Display
             for obj in self._geometry:
                 if isinstance(obj, rg.Mesh):
@@ -125,7 +175,7 @@ def run_preview(input_text=None):
         from tools import twist_tower
 
         result = twist_tower.run(inputs, logger)
-        _preview_geometry = _as_geometry_list(result)
+        _preview_geometry = _prepare_preview_geometry(_as_geometry_list(result))
         logger.info("Preview objects: {}".format(len(_preview_geometry)))
 
         _preview_conduit = _create_preview_conduit(_preview_geometry)
@@ -148,6 +198,37 @@ def clear_preview():
     logger = Logger()
     _clear_preview_state(redraw=True)
     logger.info("Preview cleared.")
+    return _set_last_log(logger.text())
+
+
+def zoom_to_preview():
+    """Zoom the active Rhino view to the current preview geometry."""
+    logger = Logger()
+
+    if not _preview_geometry:
+        logger.info("No preview geometry to zoom.")
+        return _set_last_log(logger.text())
+
+    try:
+        import scriptcontext as sc
+
+        bbox = _combined_bounding_box(_preview_geometry)
+        if bbox is None:
+            logger.info("No valid preview bounding box to zoom.")
+            return _set_last_log(logger.text())
+
+        view = sc.doc.Views.ActiveView
+        if view is not None:
+            view.ActiveViewport.ZoomBoundingBox(bbox)
+            view.Redraw()
+            _redraw_views()
+            logger.info("Zoomed to preview.")
+        else:
+            logger.info("No active Rhino view to zoom.")
+    except Exception:
+        logger.error("Status: error")
+        logger.error(traceback.format_exc())
+
     return _set_last_log(logger.text())
 
 
