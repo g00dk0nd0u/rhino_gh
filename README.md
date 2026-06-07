@@ -18,6 +18,8 @@ Phase 3 adds `sandbox_runner/run_core_preview.py`, a non-visual agent feedback r
 
 Phase 4 adds `plugin/rhino_preview_session.py`, a Rhino-side visual preview prototype. It displays `twist_tower` geometry through a Rhino DisplayConduit without writing preview geometry to the active Rhino document. `commit_preview()` is the explicit human-approved import step that adds the current preview geometry to the model.
 
+Phase 5 adds command-style Rhino Python scripts under `plugin/commands/` for `AgentPreviewRun`, `AgentPreviewClear`, `AgentPreviewZoom`, and `AgentPreviewCommit`. These wrappers make the preview workflow easier to launch from Rhino ScriptEditor or `RunPythonScript`, while still keeping the real preview logic in Python modules. This is still not a packaged `.rhp` plugin. The command scripts are a bridge between ScriptEditor testing and future plugin or UI packaging.
+
 Grasshopper files are retained as prototype and reference assets only. They are not the final UI or agent runtime.
 
 Future work will turn the preview prototype into a full packaged Rhino plugin UI with explicit Import or Commit controls.

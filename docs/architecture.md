@@ -12,6 +12,8 @@ Phase 3 adds a pure Python core preview report runner under `sandbox_runner/`. T
 
 Phase 4 adds a Rhino-side non-destructive visual preview prototype under `plugin/`. It uses a Rhino DisplayConduit or equivalent viewport drawing layer to show `twist_tower` geometry without writing preview objects to the active document. `commit_preview()` remains the explicit human-approved import step.
 
+Phase 5 adds command-style Rhino Python scripts under `plugin/commands/`. They wrap the preview session functions so Rhino users can run preview actions more easily from ScriptEditor or `RunPythonScript` without pasting long code blocks. This remains a bridge workflow, not a packaged `.rhp` plugin.
+
 ## Target workflow
 
 The target workflow is:
@@ -42,7 +44,7 @@ Binary UI files are not suitable as the primary place for agent-generated logic.
 - `core/`: pure or mostly pure reusable logic that can be tested without Rhino where possible.
 - `tools/`: Rhino-facing tool entry points that expose `run(inputs, logger)`.
 - `sandbox_runner/`: agent-executable non-destructive report and preview runners. The current Phase 3 runner is a pure Python artifact generator for PDCD, not a visual Rhino preview.
-- `plugin/`: Rhino-side preview prototype now; future final Rhino plugin UI and human-approved Import or Commit workflow.
+- `plugin/`: Rhino-side preview prototype now; future final Rhino plugin UI and human-approved Import or Commit workflow. Phase 5 also adds command-style Rhino Python scripts as a bridge between ScriptEditor testing and future packaging.
 - `preview/`: generated preview artifacts such as manifests, geometry files, and screenshots.
 - `logs/`: run logs and error traces.
 - `tests/`: automated tests where possible.
