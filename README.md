@@ -16,9 +16,11 @@ The pure generation logic lives in `core/twist_tower_core.py`. The Rhino-facing 
 
 Phase 3 adds `sandbox_runner/run_core_preview.py`, a non-visual agent feedback runner that executes the pure core logic without Rhino and writes `preview/manifest.json`, `preview/twist_tower_data.json`, and `logs/last_run.log`. These runtime artifacts are generated locally and ignored by git.
 
+Phase 4 adds `plugin/rhino_preview_session.py`, a Rhino-side visual preview prototype. It displays `twist_tower` geometry through a Rhino DisplayConduit without writing preview geometry to the active Rhino document. `commit_preview()` is the explicit human-approved import step that adds the current preview geometry to the model.
+
 Grasshopper files are retained as prototype and reference assets only. They are not the final UI or agent runtime.
 
-Future work will add `sandbox_runner/` for non-destructive preview runs and `plugin/` for the final Rhino UI with an explicit Import or Commit step.
+Future work will turn the preview prototype into a full packaged Rhino plugin UI with explicit Import or Commit controls.
 
 ## Prototype Grasshopper usage
 

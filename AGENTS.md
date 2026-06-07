@@ -34,6 +34,13 @@ def run(inputs, logger):
   Rhino document during preview.
 - Pure report runners in `sandbox_runner/` should stay standard-library-only
   unless explicitly approved.
+- Phase 4 introduces a Rhino-side non-destructive preview prototype under
+  `plugin/`.
+- Rhino-side preview should use DisplayConduit or equivalent viewport drawing
+  and must not write preview geometry to the active Rhino document.
+- `commit_preview()` is the explicit human-approved import step for the Phase 4
+  prototype.
+- Full packaged Rhino plugin UI comes later.
 - Agent PDCD runners should emit machine-readable artifacts and logs without
   Rhino.
 - Preview output should include logs and machine-readable artifacts where

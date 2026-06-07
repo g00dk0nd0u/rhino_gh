@@ -10,6 +10,8 @@ Phase 2 separates pure twisted tower generation from Rhino adapter code. The `co
 
 Phase 3 adds a pure Python core preview report runner under `sandbox_runner/`. This runner does not display geometry visually. It executes `core/` logic, writes agent-readable JSON and log artifacts, and supports Codex PDCD feedback without Rhino.
 
+Phase 4 adds a Rhino-side non-destructive visual preview prototype under `plugin/`. It uses a Rhino DisplayConduit or equivalent viewport drawing layer to show `twist_tower` geometry without writing preview objects to the active document. `commit_preview()` remains the explicit human-approved import step.
+
 ## Target workflow
 
 The target workflow is:
@@ -27,7 +29,7 @@ The target workflow is:
 
 Preview is non-destructive, temporary, and isolated. Preview runs must not modify the active Rhino document. They may generate logs, manifests, validation data, report artifacts, or preview geometry files that can be inspected by Codex and the human user.
 
-Commit is an explicit human-approved import into the active Rhino model. Commit should happen only through the future Rhino plugin workflow, after the preview result has been reviewed and accepted.
+Commit is an explicit human-approved import into the active Rhino model. In the Phase 4 prototype, `commit_preview()` is the import action. In the future packaged plugin, Commit should happen only through the Rhino plugin workflow after the preview result has been reviewed and accepted.
 
 ## Why not Grasshopper
 
@@ -40,11 +42,11 @@ Binary UI files are not suitable as the primary place for agent-generated logic.
 - `core/`: pure or mostly pure reusable logic that can be tested without Rhino where possible.
 - `tools/`: Rhino-facing tool entry points that expose `run(inputs, logger)`.
 - `sandbox_runner/`: agent-executable non-destructive report and preview runners. The current Phase 3 runner is a pure Python artifact generator for PDCD, not a visual Rhino preview.
-- `plugin/`: final Rhino plugin UI and human-approved Import or Commit workflow.
+- `plugin/`: Rhino-side preview prototype now; future final Rhino plugin UI and human-approved Import or Commit workflow.
 - `preview/`: generated preview artifacts such as manifests, geometry files, and screenshots.
 - `logs/`: run logs and error traces.
 - `tests/`: automated tests where possible.
 
 ## Non-destructive rule
 
-Sandbox preview code must not write to the active Rhino document. Committing or importing geometry into the active Rhino model requires explicit human action in the plugin.
+Sandbox preview code must not write to the active Rhino document. Rhino-side viewport previews must use DisplayConduit or equivalent temporary drawing rather than document object creation. Committing or importing geometry into the active Rhino model requires explicit human action through `commit_preview()` now and through the packaged plugin later.
