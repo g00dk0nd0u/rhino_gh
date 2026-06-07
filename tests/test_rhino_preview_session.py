@@ -12,6 +12,9 @@ class RhinoPreviewSessionTest(unittest.TestCase):
         self.assertTrue(hasattr(rhino_preview_session, "run_preview"))
         self.assertTrue(hasattr(rhino_preview_session, "commit_preview"))
 
+    def test_zoom_to_preview_function_exists(self):
+        self.assertTrue(hasattr(rhino_preview_session, "zoom_to_preview"))
+
     def test_normalize_none_returns_empty_dict(self):
         self.assertEqual(rhino_preview_session._normalize_input(None), {})
 
