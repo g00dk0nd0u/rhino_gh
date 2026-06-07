@@ -15,7 +15,10 @@ reframed as an Agent-driven Rhino Sandbox Preview platform.
 - Do not introduce tool selection unless explicitly requested.
 - Tool discovery and dropdown selection are out of scope for now.
 - Main logic must live in reusable Python modules, not binary UI files.
+- Prefer putting testable algorithmic logic in `core/`.
 - Implement Rhino-facing tools under `tools/*.py`.
+- `tools/` modules should adapt core output into `Rhino.Geometry`.
+- Core modules must not depend on Rhino unless explicitly approved.
 - Each tool module must expose:
 
 ```python
@@ -74,3 +77,4 @@ result, log_text
 - Do not commit secrets, tokens, local caches, or generated temporary files.
 - Prefer small PRs with clear commit messages.
 - Keep code comments, docstrings, and Markdown in English.
+- Use standard library `unittest` for pure Python tests.

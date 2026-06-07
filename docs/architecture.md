@@ -6,6 +6,8 @@ This repository is intended to support agent-driven Rhino tool development. Code
 
 The main code should remain external to Rhino and Grasshopper UI files, version controlled, reviewable, and testable. Business logic should live in Python modules that can be edited safely and reused by future preview runners and plugin workflows.
 
+Phase 2 separates pure twisted tower generation from Rhino adapter code. The `core/` package can be tested without Rhino, while `tools/` remains the Rhino-facing layer that converts core data into `Rhino.Geometry` objects.
+
 ## Target workflow
 
 The target workflow is:

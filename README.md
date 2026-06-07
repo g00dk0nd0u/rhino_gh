@@ -12,6 +12,8 @@ All substantial processing should live in Python modules in this repository so t
 
 The current active sample tool is `twist_tower`. It creates a closed mesh tower from square horizontal floor sections that rotate gradually as they rise. By default, it also returns the section curves.
 
+The pure generation logic lives in `core/twist_tower_core.py`. The Rhino-facing adapter lives in `tools/twist_tower.py` and converts core data into `Rhino.Geometry`. Pure Python coverage for the generator lives in `tests/test_twist_tower_core.py`.
+
 Grasshopper files are retained as prototype and reference assets only. They are not the final UI or agent runtime.
 
 Future work will add `sandbox_runner/` for non-destructive preview runs and `plugin/` for the final Rhino UI with an explicit Import or Commit step.
