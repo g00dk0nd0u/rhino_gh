@@ -32,8 +32,14 @@ def run(inputs, logger):
 - Avoid hard-coded user-specific paths inside tool modules.
 - Sandbox execution must be non-destructive and must not write to the active
   Rhino document during preview.
+- Pure report runners in `sandbox_runner/` should stay standard-library-only
+  unless explicitly approved.
+- Agent PDCD runners should emit machine-readable artifacts and logs without
+  Rhino.
 - Preview output should include logs and machine-readable artifacts where
   possible.
+- Generated runtime artifacts under `logs/` and `preview/` should not be
+  committed.
 - Import or Commit into the active Rhino document must require explicit human
   action in the future Rhino plugin.
 

@@ -1,16 +1,15 @@
 # Sandbox Runner
 
-`sandbox_runner/` will contain the future agent-executable preview runner for Rhino tools.
+`sandbox_runner/` contains agent-executable preview runners for Codex PDCD workflows.
 
-The runner should execute Rhino tool code without using Grasshopper. It should run in a Rhino-capable environment, such as Rhino Python, Rhino.Compute, or a local Rhino worker.
+Phase 3 adds `run_core_preview.py`, which is not a visual preview. It is a pure Python report runner that executes core geometry logic without Rhino, Grasshopper, or a plugin.
 
-Preview execution must be non-destructive. The runner must not modify the active Rhino document during preview.
+The current runner is intended for agent-readable feedback. It writes machine-readable artifacts and logs so Codex can inspect resolved inputs, stats, bounding boxes, and failures during PDCD iteration.
 
-Expected outputs include:
+Current outputs include:
 
 - `logs/last_run.log`
 - `preview/manifest.json`
-- Optional preview geometry files
-- Optional screenshots
+- `preview/twist_tower_data.json`
 
-The sandbox runner should support agent PDCD iteration by giving Codex clear logs, errors, preview artifacts, and validation data after each run.
+This runner is non-destructive and does not modify any active Rhino document. Rhino visual preview, screenshots, and plugin-based Import or Commit behavior come later.

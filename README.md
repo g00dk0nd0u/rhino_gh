@@ -14,6 +14,8 @@ The current active sample tool is `twist_tower`. It creates a closed mesh tower 
 
 The pure generation logic lives in `core/twist_tower_core.py`. The Rhino-facing adapter lives in `tools/twist_tower.py` and converts core data into `Rhino.Geometry`. Pure Python coverage for the generator lives in `tests/test_twist_tower_core.py`.
 
+Phase 3 adds `sandbox_runner/run_core_preview.py`, a non-visual agent feedback runner that executes the pure core logic without Rhino and writes `preview/manifest.json`, `preview/twist_tower_data.json`, and `logs/last_run.log`. These runtime artifacts are generated locally and ignored by git.
+
 Grasshopper files are retained as prototype and reference assets only. They are not the final UI or agent runtime.
 
 Future work will add `sandbox_runner/` for non-destructive preview runs and `plugin/` for the final Rhino UI with an explicit Import or Commit step.
