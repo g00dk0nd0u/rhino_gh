@@ -9,7 +9,7 @@ import shlex
 DEFAULT_INPUTS = {
     "width": 1000,
     "height": 5000,
-    "levels": 20,
+    "levels": 30,
     "twist_degrees": 90,
     "center_x": 0,
     "center_y": 0,
